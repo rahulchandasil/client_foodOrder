@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -7,18 +7,27 @@ import LoadingSpinner from "../components/LoadingSpinner";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [food, setFood] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const routeFood = location.state?.food;
+  const [food, setFood] = useState(routeFood?._id === id ? routeFood : null);
+  const [loading, setLoading] = useState(!routeFood || routeFood._id !== id);
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
+    if (food) return;
     fetchFood();
-  }, []);
+  }, [id, food]);
 
   const fetchFood = async () => {
     try {
-      const response = await api.get(`/foods/${id}`);
-      setFood(response.data.food);
+      const response = await api.get("/foods");
+      const selectedFood = response.data.foods?.find((item) => String(item._id) === String(id));
+
+      if (!selectedFood) {
+        return navigate("/");
+      }
+
+      setFood(selectedFood);
     } catch (error) {
       console.log(error);
       navigate("/");

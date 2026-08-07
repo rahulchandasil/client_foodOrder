@@ -55,6 +55,7 @@ const FoodCard = ({ food }) => {
         <div className="mt-5 flex gap-3">
           <Link
             to={`/food/${food._id}`}
+            state={{ food }}
             className="inline-flex flex-1 items-center justify-center rounded-full border border-orange-200 px-4 py-3 text-sm font-semibold text-orange-600 transition duration-200 hover:border-orange-300 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-2 active:scale-[0.98]"
           >
             View Details
