@@ -7,6 +7,7 @@ import CategoryFilter from "../components/CategoryFilter";
 import FoodCard from "../components/FoodCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import EmptyState from "../components/EmptyState";
+import heroImage from "../assets/hero.png";
 
 const Home = () => {
   const [foods, setFoods] = useState([]);
@@ -56,7 +57,7 @@ const Home = () => {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="#menu"
-                  className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/70 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/70 active:scale-[0.98]"
                 >
                   Explore Menu
                 </Link>
@@ -71,7 +72,7 @@ const Home = () => {
             <div className="relative">
               <div className="absolute inset-0 rounded-[2rem] bg-white/10 blur-2xl" />
               <img
-                src="/src/assets/hero.png"
+                src={heroImage}
                 alt="Food platter"
                 className="relative mx-auto w-full max-w-lg rounded-[2rem] object-cover shadow-xl"
               />
