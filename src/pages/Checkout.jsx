@@ -1,32 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navbar from "../components/Navbar";
 import api from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import EmptyState from "../components/EmptyState";
 import { useApp } from "../context/AppContext";
 
+const fetchCartData = async () => {
+  const response = await api.get(`/cart`);
+  return response.data.cart || { items: [] };
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { success, error, user } = useApp();
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({ fullName: "", mobile: "", address: "" });
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (!user) return navigate("/login");
-    fetchCart();
-  }, []);
-
-  const fetchCart = async () => {
-    try {
-      const res = await api.get(`/cart?userId=${user._id}`);
-      setCart(res.data.cart || { items: [] });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: cart, isLoading: loading } = useQuery({
+    queryKey: ["cart"],
+    queryFn: fetchCartData,
+    enabled: !!user,
+  });
 
   const total = useMemo(() => cart?.items.reduce((sum, item) => sum + item.foodId.price * item.quantity, 0) || 0, [cart]);
 
@@ -39,17 +36,31 @@ const Checkout = () => {
     return Object.keys(next).length === 0;
   };
 
-  const handlePlaceOrder = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-    try {
-      await api.post("/orders", { userId: user._id, address: formData.address, mobile: formData.mobile });
+  const placeOrderMutation = useMutation({
+    mutationFn: async (orderData) => {
+      const response = await api.post("/orders", orderData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cart"]);
       success("Order placed successfully");
       navigate("/success");
-    } catch (err) {
+    },
+    onError: (err) => {
       error(err.response?.data?.message || "Order Failed");
-    }
+    },
+  });
+
+  const handlePlaceOrder = (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    placeOrderMutation.mutate({ address: formData.address, mobile: formData.mobile });
   };
+
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
   if (loading) {
     return <>
@@ -84,7 +95,12 @@ const Checkout = () => {
                 {errors[key] && <p className="mt-1 text-sm text-red-600">{errors[key]}</p>}
               </div>
             ))}
-            <button className="w-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 font-semibold text-white transition hover:shadow-lg">Place Order</button>
+            <button 
+              disabled={placeOrderMutation.isPending}
+              className="w-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 font-semibold text-white transition hover:shadow-lg disabled:opacity-70"
+            >
+              {placeOrderMutation.isPending ? "Placing Order..." : "Place Order"}
+            </button>
           </form>
           <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-orange-100">
             <h2 className="text-2xl font-bold">Order Summary</h2>

@@ -1,18 +1,55 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-border: var(--border);
+  
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+}
+
 :root {
+  /* Colors - Light Theme */
+  --primary: #ea580c; /* orange-600 */
+  --primary-hover: #c2410c; /* orange-700 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f59e0b; /* amber-500 */
+  --secondary-foreground: #ffffff;
+  
+  --background: #f8fafc; /* slate-50 */
+  --surface: #ffffff;
+  --foreground: #0f172a; /* slate-900 */
+  
+  --muted: #f1f5f9; /* slate-100 */
+  --muted-foreground: #64748b; /* slate-500 */
+  
+  --border: #e2e8f0; /* slate-200 */
+  
+  --success: #059669; /* emerald-600 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #ef4444; /* red-500 */
+
   color-scheme: light;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background: #f8fafc;
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--foreground);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -20,6 +57,23 @@
 }
 
 .dark {
+  /* Colors - Dark Theme */
+  --primary: #ea580c; /* keeping brand orange same in dark mode */
+  --primary-hover: #c2410c;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f59e0b;
+  --secondary-foreground: #ffffff;
+  
+  --background: #0f172a; /* slate-900 */
+  --surface: #1e293b; /* slate-800 */
+  --foreground: #f8fafc; /* slate-50 */
+  
+  --muted: #334155; /* slate-700 */
+  --muted-foreground: #94a3b8; /* slate-400 */
+  
+  --border: #334155; /* slate-700 */
+  
   color-scheme: dark;
 }
 
@@ -35,81 +89,17 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(251, 146, 60, 0.14), transparent 34%),
-    linear-gradient(180deg, #fff7ed 0%, #f8fafc 45%, #f1f5f9 100%);
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .dark body {
-  background:
-    radial-gradient(circle at top, rgba(249, 115, 22, 0.14), transparent 34%),
-    linear-gradient(180deg, #0f172a 0%, #111827 45%, #030712 100%);
-  color: #e5e7eb;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 #root {
   min-height: 100vh;
-}
-
-.dark .surface {
-  background: rgba(15, 23, 42, 0.78);
-  color: #e5e7eb;
-  border-color: rgba(251, 146, 60, 0.2);
-}
-
-.dark .surface-soft {
-  background: rgba(30, 41, 59, 0.78);
-  color: #e5e7eb;
-  border-color: rgba(251, 146, 60, 0.15);
-}
-
-.dark .text-slate-900 {
-  color: #f8fafc;
-}
-
-.dark .text-slate-700,
-.dark .text-slate-600,
-.dark .text-slate-500 {
-  color: #cbd5e1;
-}
-
-.dark .bg-slate-50 {
-  background-color: rgba(15, 23, 42, 0.72);
-}
-
-.dark .border-slate-200,
-.dark .ring-orange-100 {
-  border-color: rgba(251, 146, 60, 0.18);
-}
-
-.dark .dark-surface {
-  background: rgba(15, 23, 42, 0.92);
-  color: #e5e7eb;
-}
-
-.dark .dark-surface-soft {
-  background: rgba(30, 41, 59, 0.78);
-  color: #e5e7eb;
-}
-
-.dark .dark-text {
-  color: #f8fafc;
-}
-
-.dark .dark-text-muted {
-  color: #cbd5e1;
-}
-
-.dark .dark-pill {
-  background: rgba(30, 41, 59, 0.95);
-  color: #e5e7eb;
-  border-color: rgba(251, 146, 60, 0.18);
-}
-
-.dark .dark-pill-active {
-  background: #fb923c;
-  color: #fff;
 }
 
 a {

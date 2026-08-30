@@ -1,46 +1,55 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useApp } from "../context/AppContext";
+
+const fetchFoodById = async (id) => {
+  const response = await api.get(`/foods/${id}`);
+  return response.data.food;
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const routeFood = location.state?.food;
-  const [food, setFood] = useState(routeFood?._id === id ? routeFood : null);
-  const [loading, setLoading] = useState(!routeFood || routeFood._id !== id);
-  const [adding, setAdding] = useState(false);
+  const { user, success, error: toastError } = useApp();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (food) return;
-    fetchFood();
-  }, [id, food]);
+  const { data: food, isLoading: loading, isError } = useQuery({
+    queryKey: ["food", id],
+    queryFn: () => fetchFoodById(id),
+    initialData: routeFood?._id === id ? routeFood : undefined,
+    retry: false,
+  });
 
-  const fetchFood = async () => {
-    try {
-      const response = await api.get(`/foods/${id}`);
-      setFood(response.data.food);
-    } catch (error) {
-      console.log(error);
-      navigate("/");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddToCart = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return navigate("/login");
-    try {
-      setAdding(true);
-      await api.post("/cart", { userId: user._id, foodId: food._id, quantity: 1 });
+  const addToCartMutation = useMutation({
+    mutationFn: async () => {
+      const response = await api.post("/cart", { foodId: food._id, quantity: 1 });
+      return response.data.cart;
+    },
+    onSuccess: (updatedCart) => {
+      queryClient.setQueryData(["cart"], updatedCart);
+      success(`${food.name} added to cart`);
       navigate("/cart");
-    } finally {
-      setAdding(false);
+    },
+    onError: (err) => {
+      toastError("Unable to add item to cart. Please try again.");
+      console.error(err);
     }
+  });
+
+  const handleAddToCart = () => {
+    if (!user) return navigate("/login");
+    addToCartMutation.mutate();
   };
+
+  if (isError) {
+    navigate("/");
+    return null;
+  }
 
   if (loading) {
     return (
@@ -62,7 +71,12 @@ const ProductDetails = () => {
             <img
               src={food.image}
               alt={food.name}
+              decoding="async"
               className="h-[320px] w-full rounded-3xl object-cover md:h-[520px]"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://placehold.co/600x600/f1f5f9/64748b?text=Food+Image";
+              }}
             />
           </div>
           <div className="flex flex-col justify-center">
@@ -82,10 +96,10 @@ const ProductDetails = () => {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={handleAddToCart}
-                disabled={adding}
+                disabled={addToCartMutation.isPending}
                 className="inline-flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-3 font-semibold text-white transition hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-2 disabled:opacity-70"
               >
-                {adding ? "Adding..." : "Add To Cart"}
+                {addToCartMutation.isPending ? "Adding..." : "Add To Cart"}
               </button>
               <button
                 onClick={() => navigate("/")}

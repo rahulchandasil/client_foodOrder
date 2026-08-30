@@ -5,7 +5,7 @@ import { useApp } from "../context/AppContext";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { success, error } = useApp();
+  const { success, error, setUser } = useApp();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,8 +38,15 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
       });
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+      if (res.data.user) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        setUser(res.data.user);
+      }
       success(res.data.message || "Registration successful");
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       error(err.response?.data?.message || "Registration Failed");
     } finally {

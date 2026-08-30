@@ -5,10 +5,24 @@ import App from "./App";
 import "./index.css";
 import { AppProvider } from "./context/AppContext";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <AppProvider>
-      <App />
-    </AppProvider>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );

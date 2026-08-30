@@ -26,6 +26,8 @@ const Login = () => {
     try {
       setLoading(true);
       const response = await api.post("/auth/login", formData);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       setUser(response.data.user);
       success(response.data.message || "Login successful");
       navigate("/");

@@ -1,28 +1,18 @@
-const categories = [
-  "All",
-  "Pizza",
-  "Burger",
-  "Biryani",
-  "Chinese",
-  "Drinks",
-  "Desserts",
-];
+import { Button } from "./ui/Button";
 
-const CategoryFilter = ({ selected, setSelected }) => {
+const CategoryFilter = ({ categories = [], selected, setSelected }) => {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-hide">
       {categories.map((category) => (
-        <button
+        <Button
           key={category}
+          variant={selected === category ? "primary" : "secondary"}
+          size="sm"
+          className="rounded-full shrink-0"
           onClick={() => setSelected(category)}
-          className={`rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-2 ${
-            selected === category
-              ? "bg-orange-500 text-white shadow-sm dark-pill-active"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark-pill"
-          }`}
         >
           {category}
-        </button>
+        </Button>
       ))}
     </div>
   );

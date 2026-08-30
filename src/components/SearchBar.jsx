@@ -1,15 +1,17 @@
+import { Input } from "./ui/Input";
+
 const SearchBar = ({ search, setSearch }) => {
   return (
-    <label className="block">
-      <span className="sr-only">Search food</span>
-      <input
-        type="text"
-        placeholder="Search food..."
+    <div className="w-full md:w-80">
+      <Input
+        type="search"
+        placeholder="Search menu..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-full border border-orange-100 bg-white px-5 py-3 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 md:w-96"
+        aria-label="Search food"
+        className="rounded-full bg-surface"
       />
-    </label>
+    </div>
   );
 };
 
